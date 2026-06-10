@@ -15,12 +15,24 @@ def check(name, got, expected_action):
 
 
 cfg = {
-    'unrestricted_profiles': ['default'],
-    'mention_only_profiles': ['security', 'dev1', 'dev2', 'qa1', 'qa2'],
+    'platforms': ['telegram'],
+    'default_action': 'allow',
     'allow_in_dm': True,
     'allow_commands': True,
     'allow_replies_to_bot': True,
     'allow_mentions': True,
+    'gate_forum_topics': True,
+    'profile_rules': {
+        'default': {'mode': 'allow_all'},
+        'security': {'mode': 'mention_only'},
+        'dev1': {'mode': 'mention_only'},
+        'dev2': {'mode': 'mention_only'},
+        'qa1': {'mode': 'mention_only'},
+        'qa2': {'mode': 'mention_only'},
+    },
+    'bot_rules': {
+        'custom-worker-bot': {'mode': 'mention_only'},
+    },
 }
 
 check('default in group', module.decide_action({
@@ -41,6 +53,14 @@ check('dev1 reply allowed', module.decide_action({
 
 check('security DM allowed', module.decide_action({
     'platform': 'telegram', 'profile': 'security', 'chat_type': 'dm'
+}, cfg), 'allow')
+
+check('bot username fallback mention-only ignored', module.decide_action({
+    'platform': 'telegram', 'profile': 'weird-profile-name', 'bot_username': 'custom-worker-bot', 'chat_type': 'group', 'is_mentioned': False
+}, cfg), 'ignore')
+
+check('bot username fallback mention allowed', module.decide_action({
+    'platform': 'telegram', 'profile': 'weird-profile-name', 'bot_username': 'custom-worker-bot', 'chat_type': 'group', 'is_mentioned': True
 }, cfg), 'allow')
 
 print('All tests passed.')

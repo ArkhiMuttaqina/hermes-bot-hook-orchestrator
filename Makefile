@@ -1,22 +1,13 @@
-.PHONY: test install-dev1 install-dev2 install-qa1 install-qa2 install-security list
+.PHONY: test install list test-install
 
 test:
 	python tests/test_handler.py
 
-install-dev1:
-	bash scripts/install_hook.sh /home/arkhi25/.hermes/profiles/dev1
+test-install:
+	TMPDIR=$$(mktemp -d) && bash scripts/install_hook.sh "$$TMPDIR" && find "$$TMPDIR" -maxdepth 3 -type f | sort
 
-install-dev2:
-	bash scripts/install_hook.sh /home/arkhi25/.hermes/profiles/dev2
-
-install-qa1:
-	bash scripts/install_hook.sh /home/arkhi25/.hermes/profiles/qa1
-
-install-qa2:
-	bash scripts/install_hook.sh /home/arkhi25/.hermes/profiles/qa2
-
-install-security:
-	bash scripts/install_hook.sh /home/arkhi25/.hermes/profiles/security
+install:
+	@echo "Usage: bash scripts/install_hook.sh <HERMES_PROFILE_HOME> [config-template-path]"
 
 list:
 	find . -maxdepth 3 -type f | sort

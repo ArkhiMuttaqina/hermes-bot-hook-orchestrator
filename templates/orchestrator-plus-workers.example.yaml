@@ -1,0 +1,25 @@
+platforms:
+  - telegram
+
+default_action: allow
+allow_in_dm: true
+allow_commands: true
+allow_replies_to_bot: true
+allow_mentions: true
+gate_forum_topics: true
+
+profile_rules:
+  default:
+    mode: allow_all
+  security:
+    mode: mention_only
+  dev1:
+    mode: mention_only
+  dev2:
+    mode: mention_only
+  qa1:
+    mode: mention_only
+  qa2:
+    mode: mention_only
+
+bot_rules: {}
