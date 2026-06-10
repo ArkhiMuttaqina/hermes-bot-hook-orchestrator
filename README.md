@@ -4,7 +4,7 @@ Hook-first orchestration policy repo for Hermes multi-bot Telegram setups.
 
 ## Goal
 
-Keep **Haku/default** free to respond in the war-room group while forcing worker bots like `security`, `dev1`, `dev2`, `qa1`, and `qa2` to be **mention-only** in group chats.
+Keep **Haku/default** free to respond in the war-room group while forcing worker bots to be **mention-only** in group chats.
 
 ## Important reality
 
@@ -19,26 +19,40 @@ So this repo does three things:
 ## What is included
 
 - `hooks/telegram-mention-gate/HOOK.yaml` — hook manifest
-- `hooks/telegram-mention-gate/handler.py` — mention-gate policy logic
-- `hooks/telegram-mention-gate/config.example.yaml` — policy example
+- `hooks/telegram-mention-gate/handler.py` — universal mention-gate policy logic
+- `hooks/telegram-mention-gate/config.example.yaml` — portable config example
 - `docs/upstream-hook-contract.md` — proposed Hermes hook contract
-- `scripts/install_hook.sh` — installs the hook into a target Hermes profile
+- `scripts/install_hook.sh` — installs the hook into any target Hermes profile
 - `tests/test_handler.py` — unit tests for the policy logic
+
+## Universal install model
+
+This hook is designed to work for **any Hermes install** by using configurable rules instead of hardcoded local assumptions.
+
+It can gate bots by either:
+- **Hermes profile name** via `profile_rules`, or
+- **bot username** via `bot_rules`
+
+That means the same hook package can be reused across:
+- single-user setups
+- multi-profile setups
+- differently named worker bots
+- repos that don't use `dev1/dev2/qa1/...`
 
 ## Intended behavior
 
-### default / Haku
+### unrestricted bots
 - allow normal group processing
 - orchestrator can respond without mention
 
-### worker bots
+### mention-only bots
 - in groups/forum topics: only process if
   - bot is explicitly mentioned, or
   - message is a reply to that bot
 - otherwise ignore the message entirely
 
 ### DMs
-- always allow
+- always allow by default
 
 ## Current limitation
 
@@ -50,10 +64,16 @@ The hook in this repo is therefore **PR-ready policy code**, but it needs Hermes
 
 See `docs/upstream-hook-contract.md`.
 
-## Install into a profile
+## Install into any profile
 
 ```bash
-bash scripts/install_hook.sh /home/arkhi25/.hermes/profiles/dev1
+bash scripts/install_hook.sh /path/to/hermes/profile/home
+```
+
+Optional custom config template:
+
+```bash
+bash scripts/install_hook.sh /path/to/hermes/profile/home /path/to/my-config.yaml
 ```
 
 That copies the hook into:
@@ -62,15 +82,42 @@ That copies the hook into:
 <profile>/hooks/telegram-mention-gate/
 ```
 
+and installs `config.yaml` for immediate editing.
+
+## Config model
+
+Main knobs:
+- `default_action`
+- `allow_in_dm`
+- `allow_commands`
+- `allow_replies_to_bot`
+- `allow_mentions`
+- `gate_forum_topics`
+- `profile_rules`
+- `bot_rules`
+
+### Example idea
+- set orchestrator profile to `allow_all`
+- set worker profiles or bot usernames to `mention_only`
+- leave unknown profiles on `allow`
+
 ## Test the policy logic
 
 ```bash
 python tests/test_handler.py
 ```
 
+## Test the install workflow
+
+```bash
+TMPDIR=$(mktemp -d)
+bash scripts/install_hook.sh "$TMPDIR"
+find "$TMPDIR" -maxdepth 3 -type f | sort
+```
+
 ## Recommended rollout
 
 1. Keep this repo as source of truth.
 2. Add the tiny upstream hook point to Hermes via PR.
-3. Install this hook into worker profiles only.
-4. Leave `default` un-gated.
+3. Install this hook into whichever worker profiles you want gated.
+4. Leave your orchestrator unrestricted.

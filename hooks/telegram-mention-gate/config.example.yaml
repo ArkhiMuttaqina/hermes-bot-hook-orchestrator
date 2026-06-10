@@ -1,14 +1,41 @@
-unrestricted_profiles:
-  - default
+platforms:
+  - telegram
 
-mention_only_profiles:
-  - security
-  - dev1
-  - dev2
-  - qa1
-  - qa2
-
+default_action: allow
 allow_in_dm: true
 allow_commands: true
 allow_replies_to_bot: true
 allow_mentions: true
+gate_forum_topics: true
+
+# Universal model:
+# - match by Hermes profile name when available
+# - otherwise match by Telegram bot username
+# - anything unmatched falls back to default_action
+profile_rules:
+  default:
+    mode: allow_all
+  security:
+    mode: mention_only
+  dev1:
+    mode: mention_only
+  dev2:
+    mode: mention_only
+  qa1:
+    mode: mention_only
+  qa2:
+    mode: mention_only
+
+# Optional bot-specific overrides for installs where profile names differ.
+# Write usernames without leading @.
+bot_rules:
+  mas_murdock_bot:
+    mode: mention_only
+  devans1_bot:
+    mode: mention_only
+  devins2_bot:
+    mode: mention_only
+  qoala1_bot:
+    mode: mention_only
+  qoala2_bot:
+    mode: mention_only
