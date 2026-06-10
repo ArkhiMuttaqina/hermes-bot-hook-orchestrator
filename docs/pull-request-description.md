@@ -48,6 +48,7 @@ The hook package was refactored to be portable across any Hermes install:
 - rules can match by **bot username**
 - installer can copy a **custom config template**
 - default config no longer assumes only one local naming scheme
+- reusable example templates are included for common orchestration patterns
 
 ## Why this PR exists
 

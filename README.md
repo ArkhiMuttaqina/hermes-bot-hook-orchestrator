@@ -101,6 +101,21 @@ Main knobs:
 - set worker profiles or bot usernames to `mention_only`
 - leave unknown profiles on `allow`
 
+## Example config pack
+
+Ready-made templates live in `templates/`:
+
+- `templates/worker-mention-only.example.yaml`
+- `templates/orchestrator-plus-workers.example.yaml`
+- `templates/single-orchestrator-all-workers-by-username.example.yaml`
+- `templates/all-bots-mention-only-except-admin.example.yaml`
+
+Use one directly during install:
+
+```bash
+bash scripts/install_hook.sh /path/to/hermes/profile/home templates/orchestrator-plus-workers.example.yaml
+```
+
 ## Test the policy logic
 
 ```bash
