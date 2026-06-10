@@ -1,0 +1,4 @@
+name: telegram-mention-gate
+description: Enforce mention-only group behavior for worker bots while allowing unrestricted orchestrator profiles.
+events:
+  - gateway:message:preprocess
